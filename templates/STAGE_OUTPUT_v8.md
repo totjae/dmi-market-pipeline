@@ -17,10 +17,12 @@ STAGE_ID: <03:30_SIMPLE / 03:30_DEEP / 08:30_SIMPLE / 08:30_DEEP / 16:30_REVIEW>
 STAGE_TIME_KST: HH:MM
 MODEL_TYPE: <SIMPLE / DEEP / REVIEW>
 ANALYSIS_TIME_KST: YYYY-MM-DD HH:MM:SS
-LATEST_MARKET_DATA_TIME: <확인 가능한 최신 시장 데이터 기준시각 또는 N/A>
+DATA_CUTOFF_KST: <확인 가능한 최신 시장 데이터 기준시각 또는 N/A>
 RUN_TYPE: <NORMAL / RERUN>
 RERUN_SEQUENCE: <0 / 1 / 2 / ...>
 PROMPT_PATH: <실제로 사용한 canonical prompt path>
+PROMPT_VERSION: <prompt 내부 명시 버전 또는 DMI_v8>
+PROMPT_COMMIT: <실행 시 읽은 prompt의 Git commit SHA, 확인 불가 시 N/A>
 WORKFLOW_PATH: /WORKFLOW_v8.md
 PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
 [/DMI_RUN_META]
@@ -38,10 +40,18 @@ PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
 - Deep Prediction → `DEEP`
 - Daily Review → `REVIEW`
 
-### PROMPT_PATH
-- Simple → `/prompt/v8_simple_prediction.md`
-- Deep → `/prompt/v8_deep_prediction.md`
-- Review → `/prompt/v8_daily_review.md`
+### Prompt identity
+- `PROMPT_PATH`
+  - Simple → `/prompt/v8_simple_prediction.md`
+  - Deep → `/prompt/v8_deep_prediction.md`
+  - Review → `/prompt/v8_daily_review.md`
+- `PROMPT_VERSION`은 prompt가 명시한 버전을 기록한다. 현재 canonical v8 prompt는 `DMI_v8`.
+- `PROMPT_COMMIT`은 가능하면 실행 시점에 실제 읽은 prompt를 식별하는 Git commit SHA를 기록한다. 확인할 수 없으면 `N/A`.
+- 같은 path의 prompt가 이후 수정될 수 있으므로 재현성 판단에서 path만으로 동일 prompt라고 간주하지 않는다.
+
+### DATA_CUTOFF_KST
+분석에 사용한 정보의 **시간적 상한**을 기록한다. 이 시각 이후 공개·확인된 정보는 해당 run의 판단에 사용하지 않는다.
+여러 데이터 소스의 개별 timestamp를 하나로 뭉뚱그린 "최신 데이터 시각"이라는 의미로 사용하지 않는다.
 
 정상 실행은:
 - `RUN_TYPE: NORMAL`
@@ -74,9 +84,10 @@ PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
 ### Prediction 저장 규칙
 - `[STAGE_REPORT]`에는 전체 분석 결과를 보존한다.
 - TOP 후보, 상세 논리, 위험·회피 후보, Score Audit, Scenario 등 원본 prompt가 요구한 내용을 임의로 생략하지 않는다.
-- `[STAGE_HANDOFF]`에는 원본 보고서 안에서 생성된 HANDOFF를 그대로 복사한다.
-- HANDOFF를 새로 요약하거나 재계산하지 않는다.
-- REPORT와 HANDOFF 사이에 값이 다르면 저장 과정에서 임의 수정하지 않고 실행 실패 또는 출력 불일치로 보고한다.
+- `[STAGE_HANDOFF]`는 `[STAGE_REPORT]` 내부에서 생성된 원본 `[HANDOFF]...[/HANDOFF]`의 **verbatim duplicate**다.
+- HANDOFF를 새로 요약·재계산·정규화하지 않는다.
+- Prediction의 판단 원본은 `[STAGE_REPORT]`이며, `[STAGE_HANDOFF]`는 후속 기계적 읽기를 위한 복제 capsule이다.
+- REPORT 내부 HANDOFF와 `[STAGE_HANDOFF]`가 문자 그대로 일치하지 않으면 해당 run은 `INVALID_OUTPUT`으로 취급하고 정상 run으로 사용하지 않는다.
 
 ## 3. Review Stage Envelope
 
@@ -103,7 +114,9 @@ Review prompt가 향후 별도 HANDOFF를 정의하지 않는 한 `[STAGE_REVIEW
 - 오전 Prediction의 후보, Rank, 이유, Score, Expected Move를 결과를 보고 재구성하지 않는다.
 - 같은 날짜의 실제 저장된 Prediction REPORT/HANDOFF만 원본으로 사용한다.
 - 없는 stage나 필수 구간은 `PREVIOUS_STAGE_UNAVAILABLE`로 남긴다.
-- Review 본문과 REVIEW capsule의 수치가 다르면 임의로 맞추지 않고 출력 불일치로 취급한다.
+- `[STAGE_REVIEW_CAPSULE]`는 `[STAGE_REPORT]` 내부에서 생성된 원본 `[REVIEW]...[/REVIEW]`의 **verbatim duplicate**다.
+- Review의 판단 원본은 `[STAGE_REPORT]`이며, `[STAGE_REVIEW_CAPSULE]`은 장기 누적·후속 읽기를 위한 복제 capsule이다.
+- REPORT 내부 REVIEW와 `[STAGE_REVIEW_CAPSULE]`이 문자 그대로 일치하지 않으면 해당 run은 `INVALID_OUTPUT`으로 취급한다.
 
 ## 4. Preservation Rules
 
@@ -132,10 +145,12 @@ STAGE_ID: 08:30_DEEP
 STAGE_TIME_KST: 08:30
 MODEL_TYPE: DEEP
 ANALYSIS_TIME_KST: 2026-09-04 08:31:12
-LATEST_MARKET_DATA_TIME: 2026-09-04 08:29 KST
+DATA_CUTOFF_KST: 2026-09-04 08:29 KST
 RUN_TYPE: NORMAL
 RERUN_SEQUENCE: 0
 PROMPT_PATH: /prompt/v8_deep_prediction.md
+PROMPT_VERSION: DMI_v8
+PROMPT_COMMIT: <commit SHA or N/A>
 WORKFLOW_PATH: /WORKFLOW_v8.md
 PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
 [/DMI_RUN_META]
@@ -161,10 +176,12 @@ STAGE_ID: 16:30_REVIEW
 STAGE_TIME_KST: 16:30
 MODEL_TYPE: REVIEW
 ANALYSIS_TIME_KST: 2026-09-04 16:31:08
-LATEST_MARKET_DATA_TIME: 2026-09-04 16:29 KST
+DATA_CUTOFF_KST: 2026-09-04 16:29 KST
 RUN_TYPE: NORMAL
 RERUN_SEQUENCE: 0
 PROMPT_PATH: /prompt/v8_daily_review.md
+PROMPT_VERSION: DMI_v8
+PROMPT_COMMIT: <commit SHA or N/A>
 WORKFLOW_PATH: /WORKFLOW_v8.md
 PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
 [/DMI_RUN_META]
