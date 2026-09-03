@@ -1,6 +1,6 @@
 # DMI v8 — 16:30 Daily Review
 
-PROMPT_VERSION: DMI_v8.1
+PROMPT_VERSION: DMI_v8.2
 
 ## 0. 연결 문서 / 읽기 순서 / Schema Freeze
 Review 분석을 시작하기 전에 다음 문서를 읽는다.
@@ -341,8 +341,11 @@ Simple과 Deep 모두 Confidence를 기록하므로 모델별로 관찰한다.
 단일 거래일에 모든 Confidence 레벨이 없으면 `INSUFFICIENT_VARIATION`.
 
 ## 17. AVOID / HIGH-RISK Review
-구체적인 Code가 확인되는 회피 후보만 정량 검토할 수 있다.
-"유형" 형태의 회피 항목은 정성 평가만 한다.
+종목형 AVOID는 Prediction에 저장된 `Name / Code / Market`을 그대로 사용해 정량 검토한다.
+`Code=N/A`인 유형형 AVOID는 정성 평가만 한다.
+
+Review에서 종목명만 보고 Code를 새로 추정하거나 재매핑하지 않는다.
+저장된 Code가 없거나 불일치하면 해당 AVOID의 정량 평가는 `N/A`로 둔다.
 
 종목형 AVOID에 대해:
 - C2C
