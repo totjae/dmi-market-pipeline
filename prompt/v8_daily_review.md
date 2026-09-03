@@ -1,5 +1,7 @@
 # DMI v8 — 16:30 Daily Review
 
+PROMPT_VERSION: DMI_v8.0
+
 ## 0. 연결 문서 / Schema Freeze
 실행 전에 다음 문서를 읽는다.
 - `/WORKFLOW_v8.md` — stage 선택·독립성·저장·rerun 규칙
