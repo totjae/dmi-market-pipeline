@@ -20,7 +20,8 @@ DMI v8의 목적은 KRX 정규장에서 **당일 단타 기회가 될 정도로 
 - Simple Prediction: `/prompt/v8_simple_prediction.md`
 - Deep Prediction: `/prompt/v8_deep_prediction.md`
 - Daily Review: `/prompt/v8_daily_review.md`
-- Common Playbook: `/DMI_PLAYBOOK_v8.md`
+- Prediction-safe Playbook: `/DMI_PLAYBOOK_v8.md`
+- Learning Ledger: `/DMI_LEARNING_v8.md`
 - Output Template: `/templates/STAGE_OUTPUT_v8.md`
 
 Prediction 자동화는 시간대별 복제 프롬프트를 사용하지 않는다.
@@ -50,10 +51,10 @@ Prediction은 **분석 단계**와 **저장 단계**를 분리한다.
 ### 분석 전
 1. `/WORKFLOW_v8.md`
 2. 해당 canonical Prediction prompt
-3. `/DMI_PLAYBOOK_v8.md`에서 **OBJECTIVE와 ACTIVE_RULES 섹션만 읽는다**
+3. `/DMI_PLAYBOOK_v8.md` 전체
 
-Prediction은 Playbook의 `OBSERVATIONS`, `IMPROVEMENT_CANDIDATES`, `REJECTED_RULES`, 과거 Review 및 과거 run을 읽지 않는다.
-"읽고 무시"가 아니라 **당일 Prediction 입력에서 제외**한다.
+`DMI_PLAYBOOK_v8.md`는 Prediction-safe 문서이므로 OBJECTIVE와 ACTIVE_RULES 및 rule governance만 포함한다.
+Prediction은 `/DMI_LEARNING_v8.md`, 과거 Review 및 과거 run을 읽지 않는다.
 
 ### 저장 직전
 4. `/templates/STAGE_OUTPUT_v8.md`
@@ -228,5 +229,10 @@ GitHub 저장과 재검증이 모두 성공한 경우에만 `SUCCESS`로 보고�
 16:30 Review는 오전 Prediction을 평가할 뿐 수정하지 않는다.
 Review가 생성한 `OBSERVATION`, `IMPROVEMENT_CANDIDATE`, `ACTIVE_RULE_CHANGE_PROPOSED`는 해당 Review 파일에만 저장한다.
 
-Daily Review는 `DMI_PLAYBOOK_v8.md`의 ACTIVE_RULES를 직접 변경하지 않는다.
-여러 Review를 종합한 Rolling Calibration / Rule Review와 사용자 승인 같은 별도 maintenance 절차를 거쳐야 Playbook을 변경한다.
+Daily Review는 `DMI_PLAYBOOK_v8.md`와 `DMI_LEARNING_v8.md`를 직접 변경하지 않는다.
+
+- Daily Review → 해당 날짜 Review run 안에 Observation / Improvement Candidate 기록
+- Rolling Calibration / Rule Review maintenance → 여러 Review를 읽고 `DMI_LEARNING_v8.md`를 갱신
+- 사용자 승인 → 승인된 Rule Proposal만 `DMI_PLAYBOOK_v8.md` ACTIVE_RULES에 반영
+
+Prediction은 Learning Ledger를 읽지 않으므로 아직 승인되지 않은 가설이 당일 판단에 섞이지 않는다.
