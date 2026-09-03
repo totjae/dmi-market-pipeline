@@ -1,6 +1,6 @@
 # DMI v8 — Simple Big-Move Prediction
 
-PROMPT_VERSION: DMI_v8.0
+PROMPT_VERSION: DMI_v8.1
 
 ## 0. 연결 문서
 실행 전에 repository의 다음 문서를 읽는다.
@@ -35,12 +35,16 @@ PROMPT_VERSION: DMI_v8.0
 - WHY_BIG — 왜 단순 소폭 상승이 아니라 큰 움직임이 가능한가?
 - MAIN_RISK — 가장 큰 위험은 무엇인가?
 
+EXPECTED_MOVE는 **전일 KRX 정규장 종가 대비 오늘 KRX 정규장 예상 장중 최고가 상승률**, 즉 예상 FE(Favorable Excursion) 구간이다.
+
 EXPECTED_MOVE enum:
 - +1~3%
 - +3~5%
 - +5~10%
 - 10%+
 - UNCERTAIN
+
+이는 정확한 목표가격 예측이 아니라 현재 정보로 판단한 당일 잠재 최고 상승구간이다.
 
 CONFIDENCE enum:
 - LOW
