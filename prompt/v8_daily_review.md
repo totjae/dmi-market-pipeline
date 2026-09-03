@@ -1,6 +1,6 @@
 # DMI v8 — 16:30 Daily Review
 
-PROMPT_VERSION: DMI_v8.0
+PROMPT_VERSION: DMI_v8.1
 
 ## 0. 연결 문서 / Schema Freeze
 실행 전에 다음 문서를 읽는다.
@@ -15,6 +15,14 @@ PROMPT_VERSION: DMI_v8.0
 - `v8_04_0830_deep`
 
 실제 저장된 `[STAGE_REPORT]`와 `[STAGE_HANDOFF]`만 오전 예측의 원본으로 사용한다.
+
+각 선택된 Prediction의 `[DMI_RUN_META]`에서 provenance도 함께 보존한다.
+- 실제 선택된 run path
+- `PROMPT_VERSION`
+- `PROMPT_COMMIT`
+
+또한 실행 시 읽은 `/DMI_PLAYBOOK_v8.md`의 `PLAYBOOK_VERSION`을 기록한다.
+확인할 수 없는 provenance 값은 추정하지 않고 `N/A`로 둔다.
 
 - `SCHEMA_VERSION = DMI_v8`
 - 날짜: `YYYY-MM-DD`
@@ -508,6 +516,21 @@ SCHEMA_VERSION: DMI_v8
 DATE:
 AVAILABLE_MODELS:
 
+REVIEW_PROMPT_VERSION:
+PLAYBOOK_VERSION:
+SOURCE_03:30_SIMPLE_RUN_PATH:
+SOURCE_03:30_SIMPLE_PROMPT_VERSION:
+SOURCE_03:30_SIMPLE_PROMPT_COMMIT:
+SOURCE_03:30_DEEP_RUN_PATH:
+SOURCE_03:30_DEEP_PROMPT_VERSION:
+SOURCE_03:30_DEEP_PROMPT_COMMIT:
+SOURCE_08:30_SIMPLE_RUN_PATH:
+SOURCE_08:30_SIMPLE_PROMPT_VERSION:
+SOURCE_08:30_SIMPLE_PROMPT_COMMIT:
+SOURCE_08:30_DEEP_RUN_PATH:
+SOURCE_08:30_DEEP_PROMPT_VERSION:
+SOURCE_08:30_DEEP_PROMPT_COMMIT:
+
 KOSPI_RETURN:
 KOSDAQ_RETURN:
 MARKET_GROUND_TRUTH_NOTE:
@@ -645,7 +668,16 @@ ACTIVE_RULE_CHANGE_PROPOSED:
 [/REVIEW]
 ```
 
-## 26. REVIEW CAPSULE 계산 규칙
+## 26. REVIEW CAPSULE provenance 규칙
+- `REVIEW_PROMPT_VERSION`은 현재 Review canonical prompt의 실제 `PROMPT_VERSION`을 기록한다.
+- `PLAYBOOK_VERSION`은 이번 Review가 실제 읽은 Playbook의 명시 버전을 기록한다.
+- 각 `SOURCE_*_RUN_PATH`는 §9 latest valid 선택 결과로 실제 사용한 Prediction 파일 경로를 기록한다.
+- 각 `SOURCE_*_PROMPT_VERSION`과 `SOURCE_*_PROMPT_COMMIT`은 해당 선택 파일의 `[DMI_RUN_META]` 값을 그대로 복사한다.
+- stage가 없으면 해당 source provenance 필드는 모두 `PREVIOUS_STAGE_UNAVAILABLE`.
+- 값이 존재하지만 확인할 수 없으면 `N/A`.
+- 현재 canonical prompt의 버전이나 파일 수정시각을 이용해 과거 Prediction provenance를 역추정하지 않는다.
+
+## 27. REVIEW CAPSULE 계산 규칙
 - 유효 분모가 0인 Rate는 `N/A`.
 - TOP3는 실제 존재하는 상위 `min(3,N)` 후보.
 - NOT_COMPARABLE은 결과행에는 남기되 모든 평균·Hit Rate에서 제외.
