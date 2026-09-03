@@ -5,7 +5,7 @@ PROMPT_VERSION: DMI_v8.0
 ## 0. 연결 문서 / Schema Freeze
 실행 전에 다음 문서를 읽는다.
 - `/WORKFLOW_v8.md` — stage 선택·독립성·저장·rerun 규칙
-- `/DMI_PLAYBOOK_v8.md` — OBJECTIVE, ACTIVE_RULES, 기존 OBSERVATIONS/IMPROVEMENT_CANDIDATES
+- `/DMI_PLAYBOOK_v8.md` — 현재 Prediction-safe OBJECTIVE와 ACTIVE_RULES
 - `/templates/STAGE_OUTPUT_v8.md` — Review 저장 envelope
 
 같은 날짜의 최신 유효한 다음 Prediction 파일을 읽는다.
@@ -458,7 +458,9 @@ FE3 HIT가 기본 성공이지만, FE5/FE10 성공은 강도를 별도로 명시
 
 을 적는다.
 
-**Review는 DMI_PLAYBOOK_v8.md를 직접 수정하지 않는다.**
+**Review는 DMI_PLAYBOOK_v8.md와 DMI_LEARNING_v8.md를 직접 수정하지 않는다.**
+오늘의 Observation / Improvement Candidate는 현재 Review run에만 기록한다.
+여러 날짜 Review의 통합과 Learning Ledger 갱신은 별도 Rolling Calibration / Rule Review maintenance가 담당한다.
 ACTIVE_RULE 변경은 제안만 한다.
 
 단 하루 결과로 ACTIVE_RULE을 자동 승격·삭제하지 않는다.
