@@ -45,15 +45,20 @@ Prediction 자동화는 시간대별 복제 프롬프트를 사용하지 않는�
    - Normal path: `runs/YYYY-MM-DD/v8_05_1630_review.md`
 
 ## 5. Required read order — Prediction
-각 Prediction stage는 분석을 시작하기 전에 다음 순서로 읽는다.
+Prediction은 **분석 단계**와 **저장 단계**를 분리한다.
 
+### 분석 전
 1. `/WORKFLOW_v8.md`
-2. `/templates/STAGE_OUTPUT_v8.md`
-3. 해당 canonical Prediction prompt
-4. `/DMI_PLAYBOOK_v8.md`
+2. 해당 canonical Prediction prompt
+3. `/DMI_PLAYBOOK_v8.md`에서 **OBJECTIVE와 ACTIVE_RULES 섹션만 읽는다**
 
-Playbook에서는 Prediction에 허용된 `OBJECTIVE`와 `ACTIVE_RULES`만 당일 판단 규칙으로 사용한다.
-`OBSERVATIONS`, `IMPROVEMENT_CANDIDATES`, `REJECTED_RULES`, 과거 Review 및 과거 run은 당일 후보 생성·Rank·Score의 직접 입력으로 사용하지 않는다.
+Prediction은 Playbook의 `OBSERVATIONS`, `IMPROVEMENT_CANDIDATES`, `REJECTED_RULES`, 과거 Review 및 과거 run을 읽지 않는다.
+"읽고 무시"가 아니라 **당일 Prediction 입력에서 제외**한다.
+
+### 저장 직전
+4. `/templates/STAGE_OUTPUT_v8.md`
+
+Stage Output은 분석 판단 문서가 아니라 저장 계약이므로 후보 생성·Rank·Score가 끝난 뒤 저장 단계에서 확인한다.
 
 ## 6. Prediction independence
 네 Prediction stage는 서로 완전히 독립이다.
@@ -63,7 +68,9 @@ Playbook에서는 Prediction에 허용된 `OBJECTIVE`와 `ACTIVE_RULES`만 당�
 - Simple은 Deep 결과를 읽지 않는다.
 - Deep은 Simple 결과를 읽지 않는다.
 - 다른 Prediction의 후보·섹터·Rank·Score·Confidence·시장방향을 힌트, seed, confirmation, tie-breaker로 사용하지 않는다.
+- 과거 날짜의 Prediction run을 후보 생성·Rank·Score·시장판단의 직접 입력으로 사용하지 않는다.
 - 과거 Prediction 후보를 오늘의 candidate seed로 사용하지 않는다.
+- 과거 Review의 개별 종목 결과를 직접 읽지 않는다. 리뷰 기반 개선은 승인된 Playbook ACTIVE_RULES를 통해서만 Prediction에 전달된다.
 - 다른 stage가 실패했거나 없더라도 현재 Prediction을 대신 재구성하지 않는다.
 
 Prediction 독립성은 **후속 비교를 위한 실험 조건**이므로 편의를 위해 완화하지 않는다.
@@ -71,16 +78,18 @@ Prediction 독립성은 **후속 비교를 위한 실험 조건**이므로 편�
 ## 7. Required read order — Review
 16:30 Review는 다음 순서로 수행한다.
 
+### 분석 전
 1. `/WORKFLOW_v8.md`
-2. `/templates/STAGE_OUTPUT_v8.md`
-3. `/prompt/v8_daily_review.md`
-4. `/DMI_PLAYBOOK_v8.md`
-5. 같은 날짜의 각 Prediction stage에 대해 §9 규칙으로 선택한 최신 유효 파일의 실제 `[STAGE_REPORT]`와 `[STAGE_HANDOFF]`
-6. 그 후 Review prompt가 요구하는 KRX Ground Truth 조사
+2. `/prompt/v8_daily_review.md`
+3. `/DMI_PLAYBOOK_v8.md` 전체
+4. 같은 날짜의 각 Prediction stage에 대해 §9 규칙으로 선택한 최신 유효 파일의 실제 `[STAGE_REPORT]`와 `[STAGE_HANDOFF]`
+5. 그 후 Review prompt가 요구하는 KRX Ground Truth 조사
 
 Ground Truth를 먼저 보고 오전 예측을 재구성하거나 선택하지 않는다.
-
 Prediction stage가 없거나 유효 파일이 없으면 `PREVIOUS_STAGE_UNAVAILABLE`로 처리한다.
+
+### 저장 직전
+6. `/templates/STAGE_OUTPUT_v8.md`
 
 ## 8. Rerun naming
 정상 파일이 이미 존재하면 덮어쓰거나 삭제하지 않는다.
@@ -99,6 +108,11 @@ Rerun path:
 - `v8_04_0830_deep_rerun_02.md`
 
 Rerun은 이전 파일을 수정하는 것이 아니라 **새 독립 실행 파일**이다.
+
+### Official rerun policy
+`runs/YYYY-MM-DD/` 아래 저장되는 rerun은 모두 **공식 대체 실행**으로 간주한다.
+테스트·프롬프트 실험·형식 검증 목적 실행은 official run 경로에 저장하지 않는다.
+테스트 결과가 `runs/`에 들어오면 Review의 latest valid 선택을 오염시킬 수 있으므로 금지한다.
 
 ## 9. Valid run / latest valid selection
 파일이 존재한다는 이유만으로 valid run으로 간주하지 않는다.
@@ -161,6 +175,17 @@ Pipeline 실행 중에는:
 - 기존 v7.1 파일과 과거 run을 수정·삭제하지 않는다.
 
 Prompt/Workflow/Template/Playbook 변경은 **pipeline 실행과 분리된 명시적 maintenance 작업**에서만 수행한다.
+
+### Prompt versioning
+canonical prompt의 판단 로직, 필수 출력 필드, enum, Score rubric, 평가 목표 등 **실질적 동작이 변경되면 `PROMPT_VERSION`을 증가**시킨다.
+문구 정리·오탈자 수정처럼 의미가 바뀌지 않는 변경은 version 증가 없이 commit SHA만 달라질 수 있다.
+
+현재 v8 canonical prompt의 시작 버전은:
+- Simple: `DMI_v8.0`
+- Deep: `DMI_v8.0`
+- Review: `DMI_v8.0`
+
+장기 calibration에서는 `PROMPT_VERSION`과 `PROMPT_COMMIT`을 함께 보존한다.
 
 ## 12. Failure / partial output
 분석 중 데이터 일부가 없다는 이유만으로 전체 run을 임의 실패시키지 않는다.
