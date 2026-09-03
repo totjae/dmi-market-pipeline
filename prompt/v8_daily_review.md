@@ -2,11 +2,15 @@
 
 PROMPT_VERSION: DMI_v8.1
 
-## 0. 연결 문서 / Schema Freeze
-실행 전에 다음 문서를 읽는다.
+## 0. 연결 문서 / 읽기 순서 / Schema Freeze
+Review 분석을 시작하기 전에 다음 문서를 읽는다.
 - `/WORKFLOW_v8.md` — stage 선택·독립성·저장·rerun 규칙
 - `/DMI_PLAYBOOK_v8.md` — 현재 Prediction-safe OBJECTIVE와 ACTIVE_RULES
+
+Prediction 원본 선택, Ground Truth 조사, 성과평가와 REVIEW capsule 생성이 모두 끝난 뒤, **저장 직전에만** 다음 문서를 읽는다.
 - `/templates/STAGE_OUTPUT_v8.md` — Review 저장 envelope
+
+Stage Output은 오전 Prediction 선택이나 성과판단의 입력으로 사용하지 않는다.
 
 같은 날짜의 최신 유효한 다음 Prediction 파일을 읽는다.
 - `v8_01_0330_simple`
