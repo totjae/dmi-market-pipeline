@@ -1,6 +1,6 @@
 # DMI v8 — Simple Big-Move Prediction
 
-PROMPT_VERSION: DMI_v8.1
+PROMPT_VERSION: DMI_v8.2
 
 ## 0. 연결 문서 / 읽기 순서
 분석을 시작하기 전에 다음 문서를 읽는다.
@@ -60,6 +60,9 @@ CONFIDENCE enum:
 이는 하락 TOP5 예측이 아니다.
 좋은 회피 후보가 없으면 비워둔다.
 
+종목형 AVOID는 반드시 가능한 경우 `Code`와 `Market`을 함께 기록한다.
+유형형 AVOID는 `Code: N/A`, `Market: N/A`로 둔다.
+
 ## 4. 출력 형식
 필드명과 순서를 유지한다. 확인할 수 없는 값은 N/A.
 
@@ -94,7 +97,7 @@ CONFIDENCE enum:
 - MAIN_RISK:
 
 ### [E] AVOID / HIGH-RISK
-| Rank | Name or Type | Reason |
+| Rank | Name or Type | Code | Market | Reason |
 |---:|---|---|
 
 해당 후보가 없으면 `NONE`.
@@ -122,7 +125,7 @@ TOP:
 5|...
 AVOID_COUNT:
 AVOID:
-1|NameOrType|Reason
+1|NameOrType|Code|Market|Reason
 2|...
 3|...
 4|...
