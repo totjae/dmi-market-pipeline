@@ -2,11 +2,15 @@
 
 PROMPT_VERSION: DMI_v8.1
 
-## 0. 연결 문서 / Schema Freeze
-실행 전에 다음 문서를 읽는다.
+## 0. 연결 문서 / 읽기 순서 / Schema Freeze
+분석을 시작하기 전에 다음 문서를 읽는다.
 - `/WORKFLOW_v8.md` — 실행·독립성·저장 규칙
-- `/DMI_PLAYBOOK_v8.md` — Prediction에 허용된 OBJECTIVE와 ACTIVE_RULES
+- `/DMI_PLAYBOOK_v8.md` — Prediction-safe OBJECTIVE와 ACTIVE_RULES
+
+후보 선정·Rank·Calibration Score 산출이 모두 끝난 뒤, **저장 직전에만** 다음 문서를 읽는다.
 - `/templates/STAGE_OUTPUT_v8.md` — 저장 envelope
+
+Stage Output은 후보 생성·Rank·Score 판단의 입력으로 사용하지 않는다.
 
 이 프롬프트는 03:30과 08:30 Deep Prediction이 공통으로 사용한다. 실행 시각만 자동화가 지정한다.
 
