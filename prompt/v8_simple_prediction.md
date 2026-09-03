@@ -63,7 +63,12 @@ CONFIDENCE enum:
 종목형 AVOID는 반드시 가능한 경우 `Code`와 `Market`을 함께 기록한다.
 유형형 AVOID는 `Code: N/A`, `Market: N/A`로 둔다.
 
-## 4. 출력 형식
+## 4. 시간 기준
+`DATA_CUTOFF_KST`는 이 Prediction 판단에 사용한 정보의 시간적 상한이다.
+해당 시각 이후 공개·확인된 정보는 이 run의 후보 선정과 판단에 사용하지 않는다.
+단순히 발견한 자료 중 가장 최신 timestamp를 의미하지 않는다.
+
+## 5. 출력 형식
 필드명과 순서를 유지한다. 확인할 수 없는 값은 N/A.
 
 ### [A] RUN CONTEXT
@@ -108,7 +113,7 @@ CONFIDENCE enum:
 - PRIMARY_THEME:
 - PRIMARY_UNCERTAINTY:
 
-## 5. HANDOFF
+## 6. HANDOFF
 아래 형식을 그대로 사용한다. 후보가 5개 미만이면 존재하는 후보만 기록한다.
 
 [HANDOFF]
