@@ -22,6 +22,7 @@ DMI v8의 목적은 KRX 정규장에서 **당일 단타 기회가 될 정도로 
 - Daily Review: `/prompt/v8_daily_review.md`
 - Prediction-safe Playbook: `/DMI_PLAYBOOK_v8.md`
 - Learning Ledger: `/DMI_LEARNING_v8.md`
+- Rolling Calibration maintenance: `/prompt/v8_rolling_calibration.md`
 - Output Template: `/templates/STAGE_OUTPUT_v8.md`
 
 Prediction 자동화는 시간대별 복제 프롬프트를 사용하지 않는다.
@@ -236,3 +237,25 @@ Daily Review는 `DMI_PLAYBOOK_v8.md`와 `DMI_LEARNING_v8.md`를 직접 변경하
 - 사용자 승인 → 승인된 Rule Proposal만 `DMI_PLAYBOOK_v8.md` ACTIVE_RULES에 반영
 
 Prediction은 Learning Ledger를 읽지 않으므로 아직 승인되지 않은 가설이 당일 판단에 섞이지 않는다.
+
+
+## 16. Rolling Calibration / Rule Review maintenance
+이 작업은 Daily pipeline stage가 아니다.
+
+Canonical prompt:
+`/prompt/v8_rolling_calibration.md`
+
+목적:
+- 여러 날짜의 유효한 16:30 Review를 5/20/60거래일 창으로 집계
+- Simple vs Deep, 03:30 vs 08:30, Deep Score calibration 분석
+- Observation / Improvement Candidate / Rule Proposal 관리
+- `/DMI_LEARNING_v8.md` 갱신
+
+경계:
+- Prediction run을 직접 수정하지 않는다.
+- Daily Review run을 수정하지 않는다.
+- `DMI_PLAYBOOK_v8.md`를 자동 수정하지 않는다.
+- `runs/YYYY-MM-DD/`에 official stage 파일을 만들지 않는다.
+- Rule Proposal은 사용자 승인 전 `READY_FOR_REVIEW / PENDING`까지만 허용한다.
+
+이 maintenance 실행은 pipeline 실행과 분리해서 수행한다.
