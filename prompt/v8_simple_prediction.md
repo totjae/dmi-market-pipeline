@@ -1,5 +1,7 @@
 # DMI v8 — Simple Big-Move Prediction
 
+PROMPT_VERSION: DMI_v8.0
+
 ## 0. 연결 문서
 실행 전에 repository의 다음 문서를 읽는다.
 - `/WORKFLOW_v8.md` — 실행·독립성·저장 규칙
