@@ -1,6 +1,6 @@
 # DMI v8 — Rolling Calibration / Rule Review
 
-PROMPT_VERSION: DMI_v8.0
+PROMPT_VERSION: DMI_v8.1
 
 이 작업은 Daily Prediction pipeline의 stage가 아니라 **maintenance 작업**이다.
 
@@ -57,11 +57,17 @@ Prediction run을 직접 다시 평가하지 않는다.
 ## 4. Version Segmentation
 서로 다른 Prediction prompt version이 섞이면 그대로 하나의 동일 모델처럼 취급하지 않는다.
 
-가능하면 다음 기준으로 세분화한다.
-- Simple PROMPT_VERSION
-- Deep PROMPT_VERSION
+Review capsule에 저장된 provenance를 authoritative source로 사용해 다음 기준으로 세분화한다.
+- 03:30 Simple PROMPT_VERSION
+- 03:30 Deep PROMPT_VERSION
+- 08:30 Simple PROMPT_VERSION
+- 08:30 Deep PROMPT_VERSION
 - Review PROMPT_VERSION
-- Playbook version
+- PLAYBOOK_VERSION
+
+각 Prediction version은 Review capsule의 `SOURCE_*_PROMPT_VERSION`을 사용한다.
+필요하면 `SOURCE_*_PROMPT_COMMIT`과 `SOURCE_*_RUN_PATH`로 세부 provenance를 확인한다.
+과거 날짜의 버전을 현재 canonical prompt 상태로 역추정하지 않는다.
 
 동일 window 안에 실질적 prompt version 변경이 있으면:
 - VERSION_MIXED: YES
@@ -69,6 +75,9 @@ Prediction run을 직접 다시 평가하지 않는다.
 - 변경 전후를 단순 합산해 규칙 결론을 내리지 않는다.
 
 PROMPT_COMMIT만 달라지고 PROMPT_VERSION이 같으면 의미 변경 여부를 Learning Changelog 또는 maintenance 기록으로 확인한다.
+
+필수 provenance가 없는 구형 Review는 해당 version-segment 분석에서 `PROVENANCE_UNAVAILABLE`로 표시한다.
+그 날짜의 성과지표 자체를 버리지는 않되, 서로 다른 버전을 동일 버전이라고 가정해 합치지 않는다.
 
 ## 5. 핵심 집계 원칙
 장기 판단은 Daily Review의 `BEST_MODEL_TODAY` 승패 수가 아니라 원지표를 사용한다.
