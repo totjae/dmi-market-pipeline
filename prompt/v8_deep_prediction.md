@@ -1,6 +1,6 @@
 # DMI v8 — Deep Big-Move Prediction
 
-PROMPT_VERSION: DMI_v8.1
+PROMPT_VERSION: DMI_v8.2
 
 ## 0. 연결 문서 / 읽기 순서 / Schema Freeze
 분석을 시작하기 전에 다음 문서를 읽는다.
@@ -338,9 +338,12 @@ TOP1~2는 다른 후보보다 상세하게 설명한다.
 오늘 **매수 관점에서** 특히 피해야 할 종목 또는 유형을 최대 5개 기록한다.
 이는 하락 TOP5 예측이 아니다.
 
+종목형 AVOID는 반드시 가능한 경우 `Code`와 `Market`을 함께 기록한다.
+유형형 AVOID는 `Code: N/A`, `Market: N/A`로 둔다.
+
 예: 극단적 선반영·추격, 갭 소진, 재료 소멸, 희석·오버행, 유동성 문제, 비정상적 변동성, 글로벌 재료의 국내 전달근거 부족.
 
-| Rank | Name or Type | Reason | Risk Type |
+| Rank | Name or Type | Code | Market | Reason | Risk Type |
 |---:|---|---|---|
 
 없으면 `NONE`.
@@ -372,7 +375,7 @@ TOP:
 5|...
 AVOID_COUNT:
 AVOID:
-1|NameOrType|Reason|RiskType
+1|NameOrType|Code|Market|Reason|RiskType
 2|...
 3|...
 4|...
