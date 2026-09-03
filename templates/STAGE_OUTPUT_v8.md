@@ -1,0 +1,18 @@
+# DMI v8 Stage Output
+
+[DMI_RUN_META]
+SCHEMA_VERSION: DMI_v8
+DATE:
+STAGE:
+ANALYSIS_TIME:
+LATEST_MARKET_DATA_TIME:
+RUN_TYPE: NORMAL
+[/DMI_RUN_META]
+
+[STAGE_REPORT]
+원본 stage prompt가 요구하는 전체 보고서를 그대로 기록한다.
+[/STAGE_REPORT]
+
+[STAGE_HANDOFF]
+원본 stage prompt의 HANDOFF 또는 REVIEW CAPSULE을 그대로 기록한다.
+[/STAGE_HANDOFF]
