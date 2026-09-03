@@ -45,7 +45,7 @@ PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
   - Simple → `/prompt/v8_simple_prediction.md`
   - Deep → `/prompt/v8_deep_prediction.md`
   - Review → `/prompt/v8_daily_review.md`
-- `PROMPT_VERSION`은 prompt가 명시한 버전을 기록한다. 현재 canonical v8 prompt는 `DMI_v8`.
+- `PROMPT_VERSION`은 prompt가 명시한 버전을 기록한다. 현재 canonical v8 prompt의 시작 버전은 `DMI_v8.0`.
 - `PROMPT_COMMIT`은 가능하면 실행 시점에 실제 읽은 prompt를 식별하는 Git commit SHA를 기록한다. 확인할 수 없으면 `N/A`.
 - 같은 path의 prompt가 이후 수정될 수 있으므로 재현성 판단에서 path만으로 동일 prompt라고 간주하지 않는다.
 
@@ -149,7 +149,7 @@ DATA_CUTOFF_KST: 2026-09-04 08:29 KST
 RUN_TYPE: NORMAL
 RERUN_SEQUENCE: 0
 PROMPT_PATH: /prompt/v8_deep_prediction.md
-PROMPT_VERSION: DMI_v8
+PROMPT_VERSION: DMI_v8.0
 PROMPT_COMMIT: <commit SHA or N/A>
 WORKFLOW_PATH: /WORKFLOW_v8.md
 PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
@@ -180,7 +180,7 @@ DATA_CUTOFF_KST: 2026-09-04 16:29 KST
 RUN_TYPE: NORMAL
 RERUN_SEQUENCE: 0
 PROMPT_PATH: /prompt/v8_daily_review.md
-PROMPT_VERSION: DMI_v8
+PROMPT_VERSION: DMI_v8.0
 PROMPT_COMMIT: <commit SHA or N/A>
 WORKFLOW_PATH: /WORKFLOW_v8.md
 PLAYBOOK_PATH: /DMI_PLAYBOOK_v8.md
