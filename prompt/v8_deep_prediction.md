@@ -1,6 +1,6 @@
 # DMI v8 — Deep Big-Move Prediction
 
-PROMPT_VERSION: DMI_v8.0
+PROMPT_VERSION: DMI_v8.1
 
 ## 0. 연결 문서 / Schema Freeze
 실행 전에 다음 문서를 읽는다.
@@ -88,6 +88,20 @@ Broad Scan에서 발견한 정보로 잠정 후보군을 만든다.
 - `PRICE_IN`: 핵심 재료와 기대가 이미 얼마나 반영됐는가?
 - `MAIN_COUNTERARGUMENT`: 이 예측이 틀릴 가장 강한 이유는 무엇인가?
 - `OPEN_EXPECTATION`: 현재 정보로 예상되는 개장 형태는 무엇인가?
+
+`OPEN_EXPECTATION`은 반드시 다음 enum 중 하나만 사용한다.
+- `GAP_UP`
+- `FLAT`
+- `GAP_DOWN`
+- `UNCERTAIN`
+
+해석 기준:
+- `GAP_UP`: 시가가 전일 KRX 정규장 종가 대비 +0.5% 이상일 것으로 예상
+- `GAP_DOWN`: 시가가 전일 KRX 정규장 종가 대비 -0.5% 이하일 것으로 예상
+- `FLAT`: 그 사이
+- `UNCERTAIN`: 신뢰할 수 있는 방향 판단이 어려움
+
+자연어 설명이 필요하면 `INTRADAY_SCENARIO`에서 덧붙이고, `OPEN_EXPECTATION` 필드 자체에는 enum만 기록한다.
 - `INTRADAY_SCENARIO`: 개장 후 어떤 경로로 Big-Move가 전개될 것으로 보는가?
 - `INVALIDATION`: 어떤 관찰이 나오면 예측 논리가 무효화되는가?
 
