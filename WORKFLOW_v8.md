@@ -77,6 +77,18 @@ Stage Output은 분석 판단 문서가 아니라 저장 계약이므로 후보 
 
 Prediction 독립성은 **후속 비교를 위한 실험 조건**이므로 편의를 위해 완화하지 않는다.
 
+### 6.1 Independence fail-over
+Prediction 실행 중 금지된 다른 Prediction run을 실수로 열람한 경우, 첫 위반만으로 전체 run을 즉시 중단하지 않고 다음 절차로 1회 복구한다.
+
+1. 열람한 다른 Prediction의 내용과 그 영향을 받은 후보·섹터·Rank·Score·Confidence·시장판단 및 모든 중간 결론을 폐기한다.
+2. 이후 다른 Prediction run을 추가로 열람하지 않는다.
+3. `/WORKFLOW_v8.md`, 해당 canonical prompt, `/DMI_PLAYBOOK_v8.md`와 허용된 외부 원출처만 사용해 Broad Scan 또는 전체 분석을 처음부터 다시 수행한다.
+4. 금지 파일에서 본 종목·근거·순위·점수는 후보 seed, 검색어, confirmation, exclusion, tie-breaker 또는 반박 근거로도 사용하지 않는다.
+5. 복구 후 완성된 결과만 저장하며, 완료 보고에 `INDEPENDENCE_FAILOVER_USED`와 최초 위반 대상을 명시한다.
+6. 복구 과정에서 독립성 위반이 다시 발생하거나 오염된 판단을 분리할 수 없으면 그때는 fail-stop으로 전환하고 저장하지 않는다.
+
+이 fail-over는 우연한 도구 오작동·경로 오선택으로 인한 1회성 오염을 복구하기 위한 것이며, 의도적으로 다른 Prediction을 비교하거나 참고할 권한을 부여하지 않는다.
+
 ## 7. Required read order — Review
 16:30 Review는 다음 순서로 수행한다.
 
