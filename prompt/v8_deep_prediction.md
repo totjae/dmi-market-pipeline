@@ -1,6 +1,6 @@
 # DMI v8 — Deep Big-Move Prediction
 
-PROMPT_VERSION: DMI_v8.2
+PROMPT_VERSION: DMI_v8.3
 
 ## 0. 연결 문서 / 읽기 순서 / Schema Freeze
 분석을 시작하기 전에 다음 문서를 읽는다.
@@ -36,6 +36,7 @@ Deep Prediction은 충분한 시장 탐색 후 후보를 발견하고, 구조화
 ## 2. 공통 데이터 원칙
 현재 실행 시각 이전에 실제 공개되었거나 확인 가능한 정보만 사용한다.
 다른 DMI Prediction 결과를 읽거나 후보 생성·Rank·Score에 사용하지 않는다. 08:30도 03:30 결과를 읽지 않는다.
+금지된 Prediction run을 실수로 열람하면 전체 실행을 즉시 중단하지 말고 WORKFLOW §6.1의 1회 fail-over 절차로 후보군·Rank·Score와 중간 판단을 전부 폐기한 뒤 Broad Scan부터 다시 수행한다.
 
 KOSPI·KOSDAQ 상장 보통주를 폭넓게 탐색한다. 특별한 이유가 없는 한 ETF·ETN·SPAC·우선주와 정상적 가격발견이 어려운 저유동성 종목은 핵심 후보에서 제외한다.
 
