@@ -2,13 +2,14 @@
 
 ```text
 [DMI_REVIEW_META]
-SCHEMA_VERSION: DMI_REVIEW_v1
+SCHEMA_VERSION: DMI_REVIEW_v1.1
 DATE:
-PREDICTION_RUN_TIME_KST:
-REVIEW_TIME_KST:
+PREDICTION_RUN_TIMES_KST: [03:30, 08:30]
+REVIEW_TIME_KST: 16:30
+STARTED_AT_KST:
+REPORT_COMPLETED_AT_KST:
 DATA_CUTOFF_KST:
-AGENT_1_SOURCE:
-AGENT_2_SOURCE:
+SOURCE_MANIFEST: <본문의 4개 에이전트·슬롯별 경로/commit/최초 저장시각/채택 상태 표>
 RUN_TYPE: NORMAL
 RERUN_SEQUENCE: 0
 [/DMI_REVIEW_META]
@@ -18,8 +19,9 @@ RERUN_SEQUENCE: 0
 
 리뷰 프롬프트에 따른 전체 평가를 작성한다.
 
+<아래 REVIEW_RESULT 블록을 요청된 슬롯마다 정확히 한 번씩 반복한다.>
 [REVIEW_RESULT]
-SCHEMA_VERSION: DMI_REVIEW_v1
+SCHEMA_VERSION: DMI_REVIEW_v1.1
 DATE:
 PREDICTION_RUN_TIME_KST:
 AGENT_1_STATUS:
@@ -46,3 +48,5 @@ IMPROVEMENT_CANDIDATE:
 ```
 
 비교가 불가능하면 해당 값과 BEST_AGENT를 `N/A`로 둔다. 본문에 없는 판단을 result에 새로 추가하지 않는다.
+
+일일 리뷰는 PREDICTION_RUN_TIME_KST=03:30, 08:30인 REVIEW_RESULT 블록 두 개를 둔다. 없는 입력도 상태와 N/A를 기록하여 블록을 생략하지 않는다. 각 필드는 해당 슬롯에만 속한다. 시간대 간 비교는 본문의 별도 절로 작성한다. 단일 슬롯 리뷰는 메타 목록에 그 슬롯만 쓰고 결과 블록도 하나만 둔다. DATA_CUTOFF_KST는 리뷰에 사용한 시장자료의 확인 기준시각이며 예측 cutoff와 혼동하지 않는다.
