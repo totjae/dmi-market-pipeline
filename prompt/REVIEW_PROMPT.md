@@ -1,6 +1,6 @@
 # DMI Two-Agent Daily Review
 
-PROMPT_VERSION: DMI_REVIEW_v1.1
+PROMPT_VERSION: DMI_REVIEW_v1.2
 
 ## 목표
 
@@ -19,8 +19,8 @@ DATE와 RUN_TIME_KST가 리뷰 대상과 일치해야 한다. TOP_COUNT와 TOP �
 
 ### 입력 형식과 선택 필드
 
-- DMI_AGENT_v1 및 DMI_AGENT_v1.1을 지원한다. 알 수 없는 버전은 UNSUPPORTED_SCHEMA로 기록하고 억지로 해석하지 않는다.
-- v1.1의 TOP 행 순서는 RowNo|Name|Code|Market|Rank|ExpectedMoveFE|Confidence|CoreReason이다. RowNo와 Rank는 같아야 한다. OPTIONAL_DETAILS는 선택 사항이고 후보 Rank로 연결한다.
+- DMI_AGENT_v1, DMI_AGENT_v1.1 및 DMI_AGENT_v1.2를 지원한다. v1.2는 v1.1 후보 구조를 유지하며 예약·실제 실행 시각을 분리한다. 알 수 없는 버전은 UNSUPPORTED_SCHEMA로 기록하고 억지로 해석하지 않는다.
+- v1.1/v1.2의 TOP 행 순서는 RowNo|Name|Code|Market|Rank|ExpectedMoveFE|Confidence|CoreReason이다. RowNo와 Rank는 같아야 한다. OPTIONAL_DETAILS는 선택 사항이고 후보 Rank로 연결한다.
 - ExpectedMoveFE는 전일 KRX 종가 대비 당일 정규장 예상 고가 상승률만 뜻한다. v1에서는 다른 단위 혼입이 허용됐으므로 본문에서 정의를 확인한 값만 FE 예측 평가에 사용한다.
 - Agent 2 등에서 FE 예측이 제공되지 않은 경우 목표가·진입 계획으로 FE를 역산하지 않는다. 실제 FE/OFE에 따른 종목 발굴 평가는 가능하지만 예상 FE 구간 평가는 N/A로 둔다.
 - 선택 필드 부재나 NOT_PROVIDED/UNVERIFIED/NOT_APPLICABLE/UNCERTAIN은 0이나 예측 실패로 처리하지 않는다. 사유와 평가 가능한 표본 수를 함께 남긴다.
@@ -80,3 +80,7 @@ DATE와 RUN_TIME_KST가 리뷰 대상과 일치해야 한다. TOP_COUNT와 TOP �
 8. 최종 요약
 
 완료 후 `/templates/REVIEW_OUTPUT.md`의 machine-readable result를 본문과 일치하게 작성한다.
+
+## 복수 슬롯 일일 리뷰
+
+WORKFLOW의 입력 선택·장전 저장 검증을 먼저 적용한다. 03:30과 08:30 각각 위 평가를 수행하고 결과를 슬롯별로 분리한다. 각 에이전트의 시간대 간 차이는 별도 비교하며, 후행 슬롯은 새 정보가 추가된 조건임을 명시한다. 입력이 누락된 그룹을 0점으로 채우거나 다른 슬롯으로 대체하지 않는다.
