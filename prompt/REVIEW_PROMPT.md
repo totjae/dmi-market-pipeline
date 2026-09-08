@@ -1,6 +1,6 @@
 # DMI Two-Agent Daily Review
 
-PROMPT_VERSION: DMI_REVIEW_v1
+PROMPT_VERSION: DMI_REVIEW_v1.1
 
 ## 목표
 
@@ -15,7 +15,18 @@ PROMPT_VERSION: DMI_REVIEW_v1
 
 DATE와 RUN_TIME_KST가 리뷰 대상과 일치해야 한다. TOP_COUNT와 TOP 행 수, 종목명·코드·Rank가 본문과 일치해야 한다. 유효하지 않거나 없는 입력은 `UNAVAILABLE`로 기록한다.
 
-후보와 당시 판단은 저장된 `STAGE_RESULT`에서만 가져온다. 에이전트 프롬프트, 다른 날짜 결과, legacy 자료를 읽지 않는다.
+후보 목록·Rank는 저장된 `STAGE_RESULT`를 사용한다. 상세 근거·가격 계획·위험·무효화 조건은 같은 선택 파일의 `STAGE_REPORT`와 선택 필드에서 읽는다. 본문과 캡슐이 충돌하면 임의로 보정하지 말고 불일치를 보고한다. 에이전트 프롬프트, 다른 날짜 결과, legacy 자료를 읽지 않는다.
+
+### 입력 형식과 선택 필드
+
+- DMI_AGENT_v1 및 DMI_AGENT_v1.1을 지원한다. 알 수 없는 버전은 UNSUPPORTED_SCHEMA로 기록하고 억지로 해석하지 않는다.
+- v1.1의 TOP 행 순서는 RowNo|Name|Code|Market|Rank|ExpectedMoveFE|Confidence|CoreReason이다. RowNo와 Rank는 같아야 한다. OPTIONAL_DETAILS는 선택 사항이고 후보 Rank로 연결한다.
+- ExpectedMoveFE는 전일 KRX 종가 대비 당일 정규장 예상 고가 상승률만 뜻한다. v1에서는 다른 단위 혼입이 허용됐으므로 본문에서 정의를 확인한 값만 FE 예측 평가에 사용한다.
+- Agent 2 등에서 FE 예측이 제공되지 않은 경우 목표가·진입 계획으로 FE를 역산하지 않는다. 실제 FE/OFE에 따른 종목 발굴 평가는 가능하지만 예상 FE 구간 평가는 N/A로 둔다.
+- 선택 필드 부재나 NOT_PROVIDED/UNVERIFIED/NOT_APPLICABLE/UNCERTAIN은 0이나 예측 실패로 처리하지 않는다. 사유와 평가 가능한 표본 수를 함께 남긴다.
+- Confidence는 낮음/보통/높음을 LOW/MEDIUM/HIGH로 대응시킨다. 그 밖의 값을 추측해 매핑하지 않는다.
+- TOP 밖의 고위험 보조 관찰군은 본문에서 별도로 검토할 수 있으나 TOP 후보 수·적중률에 포함하지 않는다. TOP 안의 관찰 후보는 발굴 평가에 포함하되 상태별로 구분한다.
+- 조건부 매매 계획은 공통 종목 발굴 KPI와 분리한다. 실제 진입 조건·취소 조건·목표·손절의 시간순서를 확인할 수 있을 때만 계획 성과를 평가한다. 일봉만 있거나 같은 봉 안에서 순서가 불명확하면 NOT_SCORABLE로 기록한다. 가격 접촉만으로 체결이나 실현수익을 단정하지 않는다.
 
 ## Ground Truth
 
