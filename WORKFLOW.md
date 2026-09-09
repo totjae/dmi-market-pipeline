@@ -15,6 +15,12 @@
 
 슬롯 목록과 단일 슬롯이 모두 지정되지 않았다면 임의로 실행 결과를 고르지 않고 실패 이유를 보고한다.
 
+## 버전과 입력 증거 보존
+
+리뷰에서 실제로 읽은 /WORKFLOW.md, /config/SOURCES.md, /prompt/REVIEW_PROMPT.md, /templates/REVIEW_OUTPUT.md의 경로·blob SHA·확인 가능한 commit SHA·조회시각을 REVIEW_DOCUMENT_VERSIONS에 기록한다. 현재 보고서 자신의 저장 commit을 미리 채우지 않는다.
+
+입력 선택 검증에서는 실제 평가한 결과 revision의 commit SHA와 blob SHA를 최초 저장 commit·시각과 구분해 INPUT_MANIFEST에 기록한다. 후보별 기록은 이 manifest의 input_id로 연결한다. 입력에 저장된 DOCUMENT_VERSIONS는 그대로 보존하고 에이전트 지침을 새로 읽어 과거 버전을 추정하지 않는다. 구버전에 버전 기록이 없으면 NOT_PROVIDED로 둔다. 버전 미확인은 성과 집계를 자동 중단시키지 않지만 특정 버전별 누적 비교에서는 미확인 그룹으로 분리한다.
+
 ## 입력 선택
 
 기본 파일:
@@ -53,4 +59,4 @@ HHMM은 리뷰 슬롯이므로 일일 리뷰는 review_1630.md이다. 두 예측
 
 기존 파일이 있으면 `review_HHMM_rerun_01.md`부터 번호를 증가시키며 덮어쓰지 않는다.
 
-저장 후 metadata, report, result wrapper와 입력 경로, 후보 수, 계산값을 재검증한다. 실제 저장과 검증이 성공한 경우에만 `SUCCESS`로 보고한다.
+저장 후 metadata, report, result wrapper와 입력 경로, 후보 수, 계산값, manifest 연결, 후보별 원자료와 출처 참조를 재검증한다. 실제 저장과 검증이 성공한 경우에만 `SUCCESS`로 보고한다.
