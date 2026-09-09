@@ -62,6 +62,9 @@ IMPROVEMENT_CANDIDATE:
 
 ## KPI 필드 규칙
 
+- AGENT_n_STATUS는 공식 채택이면 OFFICIAL, 개장시각과 같거나 이후 저장이면 LATE, 저장시각·개장시각 검증 불가이면 TIMING_UNVERIFIED, 입력 없음·무효이면 UNAVAILABLE이다. manifest의 REFERENCE_ONLY는 LATE 또는 TIMING_UNVERIFIED와 대응하며 상세 원인은 selection_reason에 기록한다.
+- LATE·TIMING_UNVERIFIED 그룹의 공식 성과 KPI와 공식 유효 표본 수는 모두 N/A이다. 구조가 유효하면 원래 COUNT만 보존할 수 있다. 참고 후보 관찰값을 공식 표본 수에 더하지 않는다.
+
 - 계산 기준은 /prompt/REVIEW_PROMPT.md의 계산·집계 규칙을 따른다. 본문 KPI 표에는 FE·OFE·AE 등 각 지표의 유효 수 / 원래 대상 수와 N/A 사유를 적는다.
 - AGENT_n_COUNT는 입력의 원래 TOP_COUNT이다. 유효한 후보 0개 입력은 0, 입력 없음·무효는 N/A이다.
 - VALID_FE_COUNT는 전체 TOP 중 FE가 유효한 수, TOP3_VALID_FE_COUNT는 원래 상위 min(3, COUNT) 안에서 FE가 유효한 수이다. 유효 입력에 가격 자료가 전혀 없으면 두 수는 0이고 성과 값은 N/A이다. 입력 자체가 없거나 무효이면 두 수도 N/A이다.
@@ -72,7 +75,7 @@ IMPROVEMENT_CANDIDATE:
 
 ## 후보별 증거 기록
 
-슬롯별 REVIEW_RESULT와 별도로, 보고서 끝에 [REVIEW_EVIDENCE] ... [/REVIEW_EVIDENCE] 블록을 정확히 한 번 추가한다. 내부는 아래 구조의 유효한 JSON으로 작성한다. 이 블록은 본문에 사용한 원자료와 계산값을 보존한다. 기존 리뷰 파일은 변경하지 않는다.
+슬롯별 REVIEW_RESULT와 별도로, [/REVIEW_REPORT] 뒤, 보고서 끝에 [REVIEW_EVIDENCE] ... [/REVIEW_EVIDENCE] 블록을 정확히 한 번 추가한다. 내부는 아래 구조의 유효한 JSON으로 작성한다. 이 블록은 본문에 사용한 원자료와 계산값을 보존한다. 기존 리뷰 파일은 변경하지 않는다.
 
 ```json
 {
@@ -110,7 +113,7 @@ candidates의 각 객체는 다음 필드를 가진다.
 - trade_plan: {"status": "NOT_PROVIDED / NOT_SCORABLE / NOT_TRIGGERED / SCORABLE 중 하나", "report_reference": "원문 절 위치 또는 null", "reason": "평가 근거", "evidence_urls": []}. SCORABLE이면 본문에 확인된 조건 발생 순서와 계획 평가 결과를 적고 그 절을 참조한다. NOT_TRIGGERED는 유효기간 동안 진입 조건 미충족을 자료로 확인했을 때만 사용한다.
 - missing_reasons: {"field": "prices.open 등 필드 경로", "status": "NOT_PROVIDED / UNVERIFIED / NOT_APPLICABLE / UNCERTAIN 중 하나", "reason": "구체적 사유"} 객체 배열이다. 모든 null 성과 값의 사유를 남긴다. 누락이 없으면 빈 배열이다.
 
-JSON의 결측값은 null, 기존 텍스트 KPI 필드의 결측값은 N/A이다. JSON에 NaN, Infinity, 주석, 자리표시자 문구를 남기지 않는다. 구조화 기록을 채우려고 미제공 예측을 계산하거나 가격·출처·SHA를 추정하지 않는다.
+리뷰가 새로 작성하는 JSON의 결측값은 null, 기존 텍스트 KPI 필드의 결측값은 N/A이다. 단, prediction_document_versions는 원본을 그대로 보존하므로 원본 내부의 문자열 N/A도 그대로 유지한다. JSON에 NaN, Infinity, 주석, 자리표시자 문구를 남기지 않는다. 구조화 기록을 채우려고 미제공 예측을 계산하거나 가격·출처·SHA를 추정하지 않는다.
 
 ### 저장 전 대조
 
