@@ -1,6 +1,6 @@
 # DMI Two-Agent Daily Review
 
-PROMPT_VERSION: DMI_REVIEW_v1.3
+PROMPT_VERSION: DMI_REVIEW_v1.4
 
 ## 목표
 
@@ -19,8 +19,8 @@ DATE와 RUN_TIME_KST가 리뷰 대상과 일치해야 한다. TOP_COUNT와 TOP �
 
 ### 입력 형식과 선택 필드
 
-- DMI_AGENT_v1, DMI_AGENT_v1.1 및 DMI_AGENT_v1.2를 지원한다. v1.2는 v1.1 후보 구조를 유지하며 예약·실제 실행 시각을 분리한다. 알 수 없는 버전은 UNSUPPORTED_SCHEMA로 기록하고 억지로 해석하지 않는다.
-- v1.1/v1.2의 TOP 행 순서는 RowNo|Name|Code|Market|Rank|ExpectedMoveFE|Confidence|CoreReason이다. RowNo와 Rank는 같아야 한다. OPTIONAL_DETAILS는 선택 사항이고 후보 Rank로 연결한다.
+- DMI_AGENT_v1, DMI_AGENT_v1.1, DMI_AGENT_v1.2 및 DMI_AGENT_v1.3을 지원한다. v1.3은 사용 문서 버전 기록을 추가하며 후보 구조는 유지한다. v1.2는 v1.1 후보 구조를 유지하며 예약·실제 실행 시각을 분리한다. 알 수 없는 버전은 UNSUPPORTED_SCHEMA로 기록하고 억지로 해석하지 않는다.
+- v1.1/v1.2/v1.3의 TOP 행 순서는 RowNo|Name|Code|Market|Rank|ExpectedMoveFE|Confidence|CoreReason이다. RowNo와 Rank는 같아야 한다. OPTIONAL_DETAILS는 선택 사항이고 후보 Rank로 연결한다.
 - ExpectedMoveFE는 전일 KRX 종가 대비 당일 정규장 예상 고가 상승률만 뜻한다. v1에서는 다른 단위 혼입이 허용됐으므로 본문에서 정의를 확인한 값만 FE 예측 평가에 사용한다.
 - Agent 2 등에서 FE 예측이 제공되지 않은 경우 목표가·진입 계획으로 FE를 역산하지 않는다. 실제 FE/OFE에 따른 종목 발굴 평가는 가능하지만 예상 FE 구간 평가는 N/A로 둔다.
 - 선택 필드 부재나 NOT_PROVIDED/UNVERIFIED/NOT_APPLICABLE/UNCERTAIN은 0이나 예측 실패로 처리하지 않는다. 사유와 평가 가능한 표본 수를 함께 남긴다.
@@ -42,6 +42,18 @@ DATE와 RUN_TIME_KST가 리뷰 대상과 일치해야 한다. TOP_COUNT와 TOP �
 - Expected Move가 구간으로 제공된 경우 구간 적합 여부
 
 모든 비율은 백분율로 표시한다.
+
+## 후보별 원자료와 추적 기록
+
+/templates/REVIEW_OUTPUT.md의 REVIEW_EVIDENCE에 입력 manifest, 리뷰 문서 버전, 가격 출처와 후보별 결과를 보존한다. 이미 검증한 본문 내용을 구조화하며 새 예측이나 거래 계획을 만들지 않는다.
+
+- 각 입력은 에이전트·날짜·슬롯과 실제 읽은 결과 revision으로 식별한다. 누락된 슬롯도 manifest에 남기되 가상의 후보 레코드를 만들지 않는다.
+- 읽을 수 있고 구조가 유효한 입력의 TOP 후보마다 원래 Rank·종목코드·이름·시장, 전일 종가와 OHLC, C2C/O2C/FE/OFE/AE, FE3/5/10, 예상 FE 구간 적합 여부를 기록한다. 가격이 결측인 후보도 누락하지 않는다.
+- 동일 종목의 동일 정규장 원자료는 여러 후보가 같은 출처를 참조할 수 있다. 후보의 에이전트·슬롯·순위는 합치지 않는다.
+- 가격별 source_id 연결로 어느 출처가 어느 값을 뒷받침하는지 보존한다. 출처는 직접 URL, 제공자, 조회시각, 관측 대상일·시장·세션, 수정주가 여부를 기록한다. 검색 결과 제목만을 값의 증거로 쓰지 않는다. 기업행사 등 가격 기준이 불명확하면 영향받는 지표를 N/A로 둔다.
+- 늦게 저장된 유효 입력은 REFERENCE_ONLY로 표시하며 후보 관찰값을 공식 KPI에 포함하지 않는다. 입력이 무효이면 이를 수리해 후보를 복원하지 않는다.
+- 평가 불가 사유는 필드별로 NOT_PROVIDED, UNVERIFIED, NOT_APPLICABLE, UNCERTAIN 중 해당 상태와 구체적 사유를 기록한다. 값의 부재를 0이나 실패로 변환하지 않는다.
+- 조건부 계획은 원문 위치와 평가 상태를 보존한다. 계획 미제공, 순서 확인 불가, 진입 조건 미충족, 평가 가능을 구분하며 미체결을 손실로 처리하지 않는다. 평가 가능할 때도 체결 사실이나 실현수익으로 단정하지 않는다.
 
 ## 비교
 
